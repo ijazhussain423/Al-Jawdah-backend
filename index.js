@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+const router = express.Router();
 
 dotenv.config(); // Load environment variables
 
