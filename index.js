@@ -11,7 +11,7 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors({ origin: "https://al-jawdah-herb.netlify.app/" }));
+app.use(cors({ origin: "*" }));
 
 // MongoDB Connection
 mongoose.connect(process.env.DB_URI)
