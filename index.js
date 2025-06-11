@@ -8,7 +8,7 @@ dotenv.config(); // Load environment variables
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(cors({ origin: "https://preeminent-praline-598c7f.netlify.app" }));
+app.use(cors({ origin: "https://al-jawdah-herb.netlify.app/" }));
 
 // MongoDB Connection
 mongoose
