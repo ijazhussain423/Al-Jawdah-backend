@@ -1,56 +1,36 @@
-import dotenv from "dotenv";
-import express from "express";
-import mongoose from "mongoose";
-import cors from "cors";
-const router = express.Router();
+import dotenv from 'dotenv';
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import router from './routes/userRoutes.js';
+import nodemailer from 'nodemailer';
 
-dotenv.config(); // Load environment variables
+dotenv.config();
 
 const app = express();
+
+// Middleware
 app.use(express.json());
-app.use(cors());
 app.use(cors({ origin: "https://al-jawdah-herb.netlify.app/" }));
 
 // MongoDB Connection
-mongoose
-  .connect(process.env.DB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+mongoose.connect(process.env.DB_URI)
   .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.error("MongoDB Connection Error:", err));
+  .catch(err => console.error("MongoDB Connection Error:", err));
 
-// User Schema
-
-const userSchema = new mongoose.Schema({
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
-  message: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-});
-
-const User = mongoose.model("User", userSchema);
-
-// Signup Route
-router.post("/customer", async (req, res) => {
-  const { firstName, lastName, email, message } = req.body;
-
-  try {
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "Email already exists" });
-    }
-
-    const newUser = new User({ firstName, lastName, email, message });
-
-    await newUser.save();
-    res.status(201).json({ message: "query submitted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+// Email transporter
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   }
 });
 
-// Start Server
+app.set('transporter', transporter); // Make transporter available in routes
+
+// Routes
+app.use("/api", router);
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
